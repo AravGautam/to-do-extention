@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "My MERN Extension",
+  "version": "1.0.0",
+  "description": "A full-stack MERN Chrome extension",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "identity",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://your-api.com/*"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/index.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
