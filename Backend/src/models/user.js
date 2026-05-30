@@ -2,24 +2,12 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 const userSchema = new mongoose.Schema({
-  email: {
-    type:     String,
-    required: [true, 'Email is required'],
-    unique:   true,
-    lowercase: true,
-    trim:     true,
-    match: [/^\S+@\S+\.\S+$/, 'Invalid email']
-  },
-  password: {
-    type:     String,
-    required: [true, 'Password is required'],
-    minlength: 8,
-    select:   false   // never returned by default
-  },
-  createdAt: { type: Date, default: Date.now }
-}, {
-  timestamps: true
-})
+  email:    { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { type: String, required: true, select: false },
+  name:     { type: String, default: '' },
+  avatar:   { type: String, default: '' },   // Google profile picture URL
+  googleId: { type: String, default: '' },   // Google user ID
+}, { timestamps: true })
 
 // Hash password before save
 userSchema.pre('save', async function () {

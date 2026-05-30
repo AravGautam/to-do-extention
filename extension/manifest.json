@@ -9,6 +9,14 @@
     "identity",
     "tabs"
   ],
+  "oauth2": {
+    "client_id": "351066743997-e6jps5dtnaf52u2nvbqdqlejphdq2h76.apps.googleusercontent.com",
+    "scopes": [
+      "openid",
+      "email",
+      "profile"
+    ]
+  },
   "host_permissions": [
     "https://your-api.com/*"
   ],
