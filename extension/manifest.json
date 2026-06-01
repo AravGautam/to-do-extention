@@ -10,16 +10,13 @@
     "tabs"
   ],
   "oauth2": {
-    "client_id": "351066743997-e6jps5dtnaf52u2nvbqdqlejphdq2h76.apps.googleusercontent.com",
+    "client_id": "351066743997-pemo30qsjtnriqg9ra151r9b2dqjdmnn.apps.googleusercontent.com",
     "scopes": [
       "openid",
       "email",
       "profile"
     ]
   },
-  "host_permissions": [
-    "https://your-api.com/*"
-  ],
   "action": {
     "default_popup": "index.html"
   },
@@ -37,8 +34,5 @@
       ],
       "run_at": "document_idle"
     }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  }
+  ]
 }

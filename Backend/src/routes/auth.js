@@ -1,16 +1,20 @@
-import express from 'express'
+import { Router } from 'express'
+import User   from '../models/user.js'
+import crypto from 'crypto'
+import protect from '../middleware/protect.js'
 import {
   register,
   login,
-  getMe
+  signToken
 } from '../controllers/auth.js'
-import protect from '../middleware/protect.js'
 
-const router = express.Router()
+const router = Router()
+router.use(protect)  // ← REMOVE this line — it blocks login/register!
+
 router.post('/register', register)
-router.post('/login', login)
-router.get('/me', protect, getMe)
-// POST /api/auth/google
+router.post('/login',    login)
+
+// Google OAuth route
 router.post('/google', async (req, res) => {
   try {
     const { googleToken } = req.body
@@ -18,7 +22,6 @@ router.post('/google', async (req, res) => {
       return res.status(400).json({ error: 'No Google token provided' })
     }
 
-    // Step 1 — verify the token with Google and get user info
     const googleRes = await fetch(
       `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleToken}`
     )
@@ -26,31 +29,26 @@ router.post('/google', async (req, res) => {
       return res.status(401).json({ error: 'Invalid Google token' })
     }
     const googleUser = await googleRes.json()
-    // googleUser = { id, email, name, picture, verified_email }
 
-    // Step 2 — find existing user or create a new one
     let user = await User.findOne({ email: googleUser.email })
 
     if (!user) {
-      // New user — create account, no password needed
       user = await User.create({
         email:    googleUser.email,
-        name:     googleUser.name,
-        avatar:   googleUser.picture,
+        name:     googleUser.name     || '',
+        avatar:   googleUser.picture  || '',
         googleId: googleUser.id,
-        password: crypto.randomUUID() // random — never used
+        password: crypto.randomUUID()
       })
     } else if (!user.googleId) {
-      // Existing email user — link their Google account
       user.googleId = googleUser.id
-      user.avatar   = googleUser.picture
+      user.avatar   = googleUser.picture || ''
       await user.save()
     }
 
-    // Step 3 — return your own JWT (same as email login)
     res.json({
       token: signToken(user._id),
-      user:  {
+      user: {
         email:  user.email,
         name:   user.name,
         avatar: user.avatar
@@ -58,9 +56,15 @@ router.post('/google', async (req, res) => {
     })
 
   } catch (err) {
-    console.error('Google auth error:', err)
+    console.error('Google auth error:', err.message)
     res.status(500).json({ error: err.message })
   }
+})
+
+// Protected routes below
+router.get('/me', protect, async (req, res) => {
+  const user = await User.findById(req.userId).select('-password')
+  res.json({ user })
 })
 
 export default router

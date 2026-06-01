@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function AuthScreen() {
-  const { login, register } = useAuth()
+  const { login, register, loginWithGoogle } = useAuth()
   const [mode,     setMode]     = useState('login')
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
   const [error,    setError]    = useState('')
   const [loading,  setLoading]  = useState(false)
+  const [gLoading, setGLoading] = useState(false)
 
   const submit = async () => {
     setError('')
@@ -23,68 +24,252 @@ export default function AuthScreen() {
     }
   }
 
+  const handleGoogle = async () => {
+    setError('')
+    setGLoading(true)
+    try {
+      await loginWithGoogle()
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setGLoading(false)
+    }
+  }
+
   const onKey = (e) => { if (e.key === 'Enter') submit() }
 
+  const styles = {
+    // Full screen wrapper
+    wrap: {
+      width: '100%',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '32px 24px',
+      background: 'radial-gradient(ellipse at top, #1c0808 0%, #0c0906 60%)',
+      boxSizing: 'border-box',
+    },
+    // Logo circle
+    logoWrap: {
+      width: 48,
+      height: 48,
+      borderRadius: 16,
+      background: 'linear-gradient(135deg, #f43f5e, #fb923c)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 22,
+      color: '#fff',
+      marginBottom: 14,
+      fontWeight: 600,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: 600,
+      color: 'rgba(255,255,255,0.92)',
+      margin: '0 0 6px',
+      letterSpacing: '-0.02em',
+    },
+    subtitle: {
+      fontSize: 12.5,
+      color: 'rgba(255,255,255,0.3)',
+      margin: '0 0 28px',
+    },
+    // Card container
+    card: {
+      width: '100%',
+      maxWidth: 320,
+      background: 'rgba(255,255,255,0.04)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderRadius: 20,
+      padding: '20px 18px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10,
+    },
+    // Google button
+    googleBtn: {
+      width: '100%',
+      padding: '11px 0',
+      borderRadius: 14,
+      border: '1px solid rgba(255,255,255,0.14)',
+      background: 'rgba(255,255,255,0.07)',
+      color: 'rgba(255,255,255,0.85)',
+      fontSize: 13,
+      fontWeight: 500,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10,
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      transition: 'background 0.15s',
+    },
+    // Divider
+    dividerWrap: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10,
+      margin: '2px 0',
+    },
+    dividerLine: {
+      flex: 1,
+      height: 0.5,
+      background: 'rgba(255,255,255,0.08)',
+    },
+    dividerTxt: {
+      fontSize: 11,
+      color: 'rgba(255,255,255,0.2)',
+    },
+    // Input fields
+    input: {
+      width: '100%',
+      padding: '11px 14px',
+      borderRadius: 12,
+      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'rgba(255,255,255,0.05)',
+      color: 'rgba(255,255,255,0.85)',
+      fontSize: 13,
+      outline: 'none',
+      fontFamily: 'inherit',
+      boxSizing: 'border-box',
+    },
+    // Error text
+    error: {
+      fontSize: 12,
+      color: '#f87171',
+      padding: '0 2px',
+    },
+    // Primary submit button
+    submitBtn: {
+      width: '100%',
+      padding: '12px 0',
+      borderRadius: 14,
+      border: 'none',
+      background: 'linear-gradient(135deg, #f43f5e, #fb923c)',
+      color: '#fff',
+      fontSize: 13,
+      fontWeight: 500,
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      marginTop: 2,
+    },
+    // Toggle link
+    toggleWrap: {
+      marginTop: 14,
+      fontSize: 12,
+      color: 'rgba(255,255,255,0.25)',
+      textAlign: 'center',
+    },
+    toggleBtn: {
+      background: 'none',
+      border: 'none',
+      color: '#fb923c',
+      fontSize: 12,
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      padding: 0,
+    },
+  }
+
   return (
-    <div className="w-full h-screen bg-gray-950 flex flex-col items-center justify-center px-6"
-         style={{ background: 'radial-gradient(ellipse at top, #1e1b4b 0%, #0a0a0f 60%)' }}>
+    <div style={styles.wrap}>
 
       {/* Logo */}
-      <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white text-xl font-bold"
-             style={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)' }}>✓</div>
-        <h1 className="text-white text-lg font-semibold tracking-tight">TodoExt</h1>
-        <p className="text-gray-500 text-xs">
-          {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
-        </p>
-      </div>
+      <div style={styles.logoWrap}>✓</div>
+      <h1 style={styles.title}>TodoExt</h1>
+      <p style={styles.subtitle}>
+        {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
+      </p>
 
       {/* Card */}
-      <div className="w-full rounded-2xl p-5 space-y-3"
-           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={styles.card}>
 
+        {/* ── Google button ── */}
+        <button
+          style={styles.googleBtn}
+          onClick={handleGoogle}
+          disabled={gLoading || loading}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
+        >
+          {gLoading ? (
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+              Opening Google…
+            </span>
+          ) : (
+            <>
+              {/* Google G logo */}
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+                <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+                <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+              </svg>
+              Continue with Google
+            </>
+          )}
+        </button>
+
+        {/* Divider */}
+        <div style={styles.dividerWrap}>
+          <div style={styles.dividerLine} />
+          <span style={styles.dividerTxt}>or email</span>
+          <div style={styles.dividerLine} />
+        </div>
+
+        {/* Email input */}
         <input
           type="email"
           placeholder="Email address"
           value={email}
           onChange={e => setEmail(e.target.value)}
           onKeyDown={onKey}
-          className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-indigo-500"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+          style={styles.input}
         />
 
+        {/* Password input */}
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           onKeyDown={onKey}
-          className="w-full rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 outline-none focus:ring-1 focus:ring-indigo-500"
-          style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+          style={styles.input}
         />
 
-        {error && (
-          <p className="text-red-400 text-xs px-1">{error}</p>
-        )}
+        {/* Error */}
+        {error && <p style={styles.error}>{error}</p>}
 
+        {/* Submit */}
         <button
           onClick={submit}
-          disabled={loading}
-          className="w-full py-3 rounded-xl text-sm font-medium text-white disabled:opacity-50 transition-opacity hover:opacity-90"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-          {loading ? 'Please wait...' : mode === 'login' ? 'Sign in' : 'Create account'}
+          disabled={loading || gLoading}
+          style={{
+            ...styles.submitBtn,
+            opacity: (loading || gLoading) ? 0.55 : 1,
+          }}
+        >
+          {loading
+            ? 'Please wait…'
+            : mode === 'login' ? 'Sign in' : 'Create account'}
+        </button>
+
+      </div>
+
+      {/* Toggle mode */}
+      <div style={styles.toggleWrap}>
+        {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+        <button
+          style={styles.toggleBtn}
+          onClick={() => { setMode(m => m === 'login' ? 'register' : 'login'); setError('') }}
+        >
+          {mode === 'login' ? 'Sign up' : 'Sign in'}
         </button>
       </div>
 
-      {/* Toggle */}
-      <p className="mt-4 text-xs text-gray-600">
-        {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
-        <button
-          onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('') }}
-          className="text-indigo-400 hover:text-indigo-300 transition-colors">
-          {mode === 'login' ? 'Sign up' : 'Sign in'}
-        </button>
-      </p>
     </div>
   )
 }

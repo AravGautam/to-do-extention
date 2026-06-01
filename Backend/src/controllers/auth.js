@@ -2,7 +2,7 @@ import crypto from 'crypto' // built-in Node.js — no npm install needed
 import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 
-const signToken = (id) =>
+export const signToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '7d'
   })
