@@ -9,7 +9,6 @@ import {
 } from '../controllers/auth.js'
 
 const router = Router()
-router.use(protect)  // ← REMOVE this line — it blocks login/register!
 
 router.post('/register', register)
 router.post('/login',    login)
@@ -18,6 +17,7 @@ router.post('/login',    login)
 router.post('/google', async (req, res) => {
   try {
     const { googleToken } = req.body
+    console.log('Google route hit, body:', req.body) // debug log
     if (!googleToken) {
       return res.status(400).json({ error: 'No Google token provided' })
     }
@@ -26,9 +26,12 @@ router.post('/google', async (req, res) => {
       `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleToken}`
     )
     if (!googleRes.ok) {
+      const text = await googleRes.text()
+      console.log('Google API error:', text)
       return res.status(401).json({ error: 'Invalid Google token' })
     }
     const googleUser = await googleRes.json()
+    console.log('Google user:', googleUser) // debug log
 
     let user = await User.findOne({ email: googleUser.email })
 

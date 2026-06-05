@@ -10,59 +10,108 @@ export default function TodoList({ filter }) {
   })
 
   if (loading) return (
-    <div className="flex-1 flex items-center justify-center">
-      <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    <div style={{
+      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{
+        width: 20, height: 20, borderRadius: '50%',
+        border: '2px solid #f43f5e', borderTopColor: 'transparent',
+        animation: 'spin 0.8s linear infinite',
+      }} />
     </div>
   )
 
   if (filtered.length === 0) return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-2">
-      <span className="text-3xl">✓</span>
-      <p className="text-gray-700 text-xs">
-        {filter === 'done' ? 'Nothing completed yet' : 'No todos yet — add one above'}
+    <div style={{
+      flex: 1, display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center', gap: 8, padding: 32,
+    }}>
+      <span style={{ fontSize: 28, opacity: 0.15 }}>✓</span>
+      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', margin: 0, textAlign: 'center' }}>
+        {filter === 'done' ? 'Nothing completed yet' : 'No todos — add one above'}
       </p>
     </div>
   )
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2"
-         style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
-      {filtered.map(todo => (
+    <div style={{
+      flex: 1, overflowY: 'auto',
+      padding: '10px 14px',
+      display: 'flex', flexDirection: 'column', gap: 7,
+      scrollbarWidth: 'thin',
+      scrollbarColor: 'rgba(244,63,94,0.3) transparent',
+    }}>
+      {filtered.map((todo, i) => (
         <div key={todo._id}
-             className="flex items-start gap-3 rounded-xl p-3 group transition-all"
-             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          className="todo-row"
+          style={{
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+            borderRadius: 14, padding: '10px 12px',
+            border: '1px solid rgba(255,255,255,0.06)',
+            background: 'rgba(255,255,255,0.03)',
+            position: 'relative', overflow: 'hidden',
+            animation: `fadeUp 0.25s ease ${i * 0.04}s both`,
+          }}>
+
+          {/* Left accent bar */}
+          <div style={{
+            position: 'absolute', left: 0, top: 0, bottom: 0, width: 3,
+            background: todo.completed
+              ? 'rgba(255,255,255,0.06)'
+              : 'linear-gradient(180deg, #f43f5e, #fb923c)',
+            borderRadius: '2px 0 0 2px',
+          }} />
 
           {/* Checkbox */}
-          <button
-            onClick={() => toggleTodo(todo._id)}
-            className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center transition-all"
-            style={{
-              background: todo.completed ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent',
-              border: todo.completed ? 'none' : '1.5px solid rgba(255,255,255,0.2)'
-            }}>
-            {todo.completed && <span className="text-white text-xs">✓</span>}
+          <button onClick={() => toggleTodo(todo._id)} style={{
+            width: 18, height: 18, borderRadius: '50%',
+            flexShrink: 0, marginTop: 2,
+            border: todo.completed ? 'none' : '1.5px solid rgba(255,255,255,0.2)',
+            background: todo.completed
+              ? 'linear-gradient(135deg, #f43f5e, #fb923c)'
+              : 'transparent',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {todo.completed &&
+              <span style={{ color: '#fff', fontSize: 10, lineHeight: 1 }}>✓</span>
+            }
           </button>
 
           {/* Text */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm leading-snug"
-               style={{
-                 color: todo.completed ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.85)',
-                 textDecoration: todo.completed ? 'line-through' : 'none'
-               }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{
+              fontSize: 12.5, margin: 0, lineHeight: 1.45,
+              color: todo.completed ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.85)',
+              textDecoration: todo.completed ? 'line-through' : 'none',
+              wordBreak: 'break-word',
+            }}>
               {todo.text}
             </p>
             {todo.pageTitle && (
-              <p className="text-xs mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              <p style={{
+                fontSize: 11, margin: '3px 0 0',
+                color: 'rgba(255,255,255,0.18)',
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>
                 📄 {todo.pageTitle}
               </p>
             )}
           </div>
 
-          {/* Delete — shows on hover */}
+          {/* Delete button */}
           <button
             onClick={() => deleteTodo(todo._id)}
-            className="text-gray-800 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0 text-lg leading-none">
+            className="del-btn"
+            style={{
+              fontSize: 18, lineHeight: 1,
+              color: 'rgba(255,255,255,0.1)',
+              background: 'none', border: 'none',
+              cursor: 'pointer', flexShrink: 0, padding: '0 2px',
+              transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = '#f43f5e'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.1)'}>
             ×
           </button>
         </div>

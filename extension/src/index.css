@@ -1,32 +1,29 @@
 @import "tailwindcss";
 
-/* Popup size constraints */
 body {
   width: 400px;
   min-height: 500px;
   margin: 0;
   padding: 0;
-  -webkit-font-smoothing: antialiased;
-  font-family: 'Inter', system-ui, sans-serif;
   background: #0c0906;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(244, 63, 94, 0.3) transparent;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* Remove input autofill blue background */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 30px #1a0d0d inset !important;
   -webkit-text-fill-color: rgba(255,255,255,0.85) !important;
 }
 
-/* Spinning loader utility */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.spin {
-  animation: spin 0.8s linear infinite;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244,63,94,0.25) transparent;
 }
