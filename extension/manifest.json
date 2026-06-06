@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "My MERN Extension",
+  "name": "TodoExt",
   "version": "1.0.0",
-  "description": "A full-stack MERN Chrome extension",
+  "description": "Manage your todos while browsing — save tasks directly from any webpage.",
   "permissions": [
     "storage",
     "activeTab",
@@ -17,8 +17,21 @@
       "profile"
     ]
   },
+  "host_permissions": [
+    "https://to-do-extention.onrender.com/*"
+  ],
+  "icons": {
+    "16":  "icons/16.png",
+    "48":  "icons/48.png",
+    "128": "icons/128.png"
+  },
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": {
+      "16":  "icons/16.png",
+      "48":  "icons/48.png",
+      "128": "icons/128.png"
+    }
   },
   "background": {
     "service_worker": "src/background/index.js",
@@ -26,12 +39,8 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "src/content/index.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["src/content/index.js"],
       "run_at": "document_idle"
     }
   ]

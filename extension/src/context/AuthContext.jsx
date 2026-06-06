@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 
 const AuthContext = createContext(null)
-const API = 'http://localhost:4000/api'
+const API = 'https://to-do-extention.onrender.com/api'
 
 export function AuthProvider({ children }) {
   const [token,   setToken]   = useState(null)
